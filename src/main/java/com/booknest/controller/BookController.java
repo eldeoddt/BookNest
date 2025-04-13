@@ -38,12 +38,7 @@ public class BookController {
                 .collect(Collectors.toList());
 
         // responseDTO에 book dto list를 담는다.
-        ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder()
-                .success(true)
-                .code(200)
-                .data(dtos)
-                .error(null)
-                .build();
+        ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
         return ResponseEntity.ok().body(response);
     }
 
@@ -59,25 +54,13 @@ public class BookController {
             // enitity 생성
             List<BookEntity> entities = service.create(entity);
             List<BookDTO> dtos = entities.stream().map(BookDTO::new).collect(Collectors.toList());
-            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder()
-                    .success(true)
-                    .code(200)
-                    .data(dtos)
-                    .error(null)
-                    .build();
+            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             // 예외 처리 dto 대신 error메시지 반환
             String error = e.getMessage();
-            int errorCode =  500;
-
-            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder()
-                    .success(false)
-                    .code(errorCode)
-                    .error(error)
-                    .data(null)
-                    .build();
+            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().error(error).build();
             return ResponseEntity.badRequest().body(response);
         }
     }
@@ -92,12 +75,7 @@ public class BookController {
         // service.update로 엔티티 업데이트.
         List<BookEntity> entities = service.update(entity);
         List<BookDTO> dtos = entities.stream().map(BookDTO::new).collect(Collectors.toList());
-        ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder()
-                .success(true)
-                .code(200)
-                .data(dtos)
-                .error(null)
-                .build();
+        ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
 
         return ResponseEntity.ok().body(response);
     }
@@ -112,12 +90,7 @@ public class BookController {
             // service.delete로 엔티티 삭제
             List<BookEntity> entities = service.delete(entity);
             List<BookDTO> dtos = entities.stream().map(BookDTO::new).collect(Collectors.toList());
-            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder()
-                    .success(true)
-                    .code(200)
-                    .data(dtos)
-                    .error(null)
-                    .build();
+            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {

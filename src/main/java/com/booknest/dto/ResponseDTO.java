@@ -12,8 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class ResponseDTO<T> {
-    private boolean success;
-    private int code;
     private String error;
     private List<T> data;
 }
