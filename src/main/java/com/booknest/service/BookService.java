@@ -18,18 +18,27 @@ public class BookService {
 
     /**
      * book을 생성합니다.
+     *
+     * @param entity
+     * @return getAllBooks()
      */
     public List<BookEntity> create(final BookEntity entity) {
         validate(entity);
         repository.save(entity);
         log.info("entity id: {} is saved", entity.getId());
-        return repository.findByUserId(entity.getUserId());
+        return getAllBooks();
     }
 
     /**
      * book을 수정합니다.
+     *
+     * @param entity
+     * @return findById()
      */
-    public List<BookEntity> update(BookEntity entity) {
+    public BookEntity update(BookEntity entity) {
+        if (entity.getId() == null) {
+            throw new IllegalArgumentException("수정하려면 ID가 반드시 필요합니다.");
+        }
         validate(entity);
         final Optional<BookEntity> original = repository.findById(entity.getId());
 
@@ -38,21 +47,18 @@ public class BookService {
             book.setPublisher(entity.getPublisher());
             book.setTitle(entity.getTitle());
             book.setAuthor(entity.getAuthor());
-            book.setIsbn(entity.getIsbn());
-            book.setPublishDate(entity.getPublishDate());
-            book.setCategory(entity.getCategory());
-            book.setLanguage(entity.getLanguage());
             book.setPrice(entity.getPrice());
-            book.setStock(entity.getStock());
-            book.setSoldCount(entity.getSoldCount());
             repository.save(book);
         });
 
-        return retrieveByUserId(entity.getUserId());
+        return findById(entity.getId());
     }
 
     /**
      * book을 삭제합니다.
+     *
+     * @param entity
+     * @return getAllBooks()
      */
     public List<BookEntity> delete(final BookEntity entity) {
         validate(entity);
@@ -65,7 +71,16 @@ public class BookService {
             throw new RuntimeException("error deleting entity" + entity.getId());
         }
 
-        return retrieveByUserId(entity.getUserId());
+        return getAllBooks();
+    }
+
+    /**
+     * 모든 책 리스트 조회
+     *
+     * @return 모든 책 리스트
+     */
+    public List<BookEntity> getAllBooks() {
+        return repository.findAll();
     }
 
     /**
@@ -79,7 +94,18 @@ public class BookService {
      * book을 title로 검색합니다.
      */
     public List<BookEntity> retrieveByTitle(final String title) {
-        return repository.findByUserId(title);
+        return repository.findByTitle(title);
+    }
+
+    /**
+     * book을 id로 검색합니다.
+     *
+     * @param id
+     * @return BookEntity
+     */
+    public BookEntity findById(final String id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("도서를 찾을 수 없습니다."));
     }
 
     /**
