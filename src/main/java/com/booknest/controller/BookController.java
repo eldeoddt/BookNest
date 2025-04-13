@@ -2,6 +2,7 @@ package com.booknest.controller;
 
 import com.booknest.dto.BookDTO;
 import com.booknest.dto.ResponseDTO;
+import com.booknest.dto.TitleRequestDTO;
 import com.booknest.model.BookEntity;
 import com.booknest.service.BookService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +46,10 @@ public class BookController {
 
     // book 검색
     @GetMapping
-    public ResponseEntity<?> retrieveBookList(@RequestParam(required = false) String title) {
+    public ResponseEntity<?> retrieveBookList(@RequestBody TitleRequestDTO title) {
         String temporaryUserId = "jisuHan";
         List<BookEntity> entities;
-        entities = service.retrieveByTitle(title);
+        entities = service.retrieveByTitle(title.getTitle());
 
         // 자바 스트림을 이용하여 entity list -> book dto list로 변환.
         List<BookDTO> dtos = entities.stream()
