@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "*")
 @Slf4j
 @RestController
 @RequestMapping("book")
@@ -21,14 +22,32 @@ public class BookController {
     @Autowired
     private BookService service;
 
+    // 전체 book 조회
+    @GetMapping("/all")
+    public ResponseEntity<?> retrieveAllBooks() {
+        try {
+            List<BookEntity> entities = service.getAllBooks();
+
+            List<BookDTO> dtos = entities.stream()
+                    .map(BookDTO::new)
+                    .collect(Collectors.toList());
+
+            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
+            return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().error(error).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
     // book 추가
     @PostMapping
-    public ResponseEntity<?> createBook(@RequestBody BookDTO dto) {
+    public ResponseEntity<?> createBook(@RequestBody BookDTO dto, String userId) {
         try {
-            String temporaryUserId = "jisuHan";
             BookEntity entity = BookDTO.toEntity(dto);
             entity.setId(null);
-            entity.setUserId(temporaryUserId);
+            entity.setUserId(userId);
 
             // enitity 생성
             List<BookEntity> entities = service.create(entity);
@@ -46,28 +65,23 @@ public class BookController {
 
     // book 검색
     @GetMapping
-    public ResponseEntity<?> retrieveBookList(@RequestBody TitleRequestDTO title) {
-        String temporaryUserId = "jisuHan";
-        List<BookEntity> entities;
-        entities = service.retrieveByTitle(title.getTitle());
+    public ResponseEntity<?> retrieveBookList(@RequestParam("title") String title) {
+        List<BookEntity> entities = service.retrieveByTitle(title);
 
-        // 자바 스트림을 이용하여 entity list -> book dto list로 변환.
         List<BookDTO> dtos = entities.stream()
                 .map(BookDTO::new)
                 .collect(Collectors.toList());
 
-        // responseDTO에 book dto list를 담는다.
         ResponseDTO<BookDTO> response = ResponseDTO.<BookDTO>builder().data(dtos).build();
         return ResponseEntity.ok().body(response);
     }
 
     // book 수정
     @PutMapping
-    public ResponseEntity<?> updateBook(@RequestBody BookDTO dto) {
+    public ResponseEntity<?> updateBook(@RequestBody BookDTO dto, String userId) {
         try {
-            String temporaryUserId = "jisuHan";
             BookEntity entity = BookDTO.toEntity(dto);
-            entity.setUserId(temporaryUserId);
+            entity.setUserId(userId);
             // service.update로 엔티티 업데이트.
             BookEntity newEntity = service.update(entity);
 
@@ -85,11 +99,10 @@ public class BookController {
 
     // book 삭제
     @DeleteMapping
-    public ResponseEntity<?> deleteBook(@RequestBody BookDTO dto) {
+    public ResponseEntity<?> deleteBook(@RequestBody BookDTO dto, String userId) {
         try {
-            String temporaryUserId = "jisuHan";
             BookEntity entity = BookDTO.toEntity(dto);
-            entity.setUserId(temporaryUserId);
+            entity.setUserId(userId);
             // service.delete로 엔티티 삭제
             List<BookEntity> entities = service.delete(entity);
             List<BookDTO> dtos = entities.stream().map(BookDTO::new).collect(Collectors.toList());

@@ -25,7 +25,6 @@ public class BookService {
     public List<BookEntity> create(final BookEntity entity) {
         validate(entity);
         repository.save(entity);
-        log.info("entity id: {} is saved", entity.getId());
         return getAllBooks();
     }
 
