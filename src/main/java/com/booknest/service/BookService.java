@@ -93,7 +93,7 @@ public class BookService {
      * book을 title로 검색합니다.
      */
     public List<BookEntity> retrieveByTitle(final String title) {
-        return repository.findByTitle(title);
+        return repository.findByTitleContaining(title);
     }
 
     /**

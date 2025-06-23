@@ -8,22 +8,22 @@ import com.booknest.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*")
 @Slf4j
 @RestController
-@RequestMapping("book")
+@RequestMapping
 public class BookController {
 
     @Autowired
     private BookService service;
 
     // 전체 book 조회
-    @GetMapping("/all")
+    @GetMapping("/list")
     public ResponseEntity<?> retrieveAllBooks() {
         try {
             List<BookEntity> entities = service.getAllBooks();
@@ -42,8 +42,8 @@ public class BookController {
     }
 
     // book 추가
-    @PostMapping
-    public ResponseEntity<?> createBook(@RequestBody BookDTO dto, String userId) {
+    @PostMapping("/book")
+    public ResponseEntity<?> createBook(@RequestBody BookDTO dto, @AuthenticationPrincipal String userId) {
         try {
             BookEntity entity = BookDTO.toEntity(dto);
             entity.setId(null);
@@ -64,7 +64,7 @@ public class BookController {
     }
 
     // book 검색
-    @GetMapping
+    @GetMapping("/book")
     public ResponseEntity<?> retrieveBookList(@RequestParam("title") String title) {
         List<BookEntity> entities = service.retrieveByTitle(title);
 
@@ -77,8 +77,8 @@ public class BookController {
     }
 
     // book 수정
-    @PutMapping
-    public ResponseEntity<?> updateBook(@RequestBody BookDTO dto, String userId) {
+    @PutMapping("/book")
+    public ResponseEntity<?> updateBook(@RequestBody BookDTO dto, @AuthenticationPrincipal String userId) {
         try {
             BookEntity entity = BookDTO.toEntity(dto);
             entity.setUserId(userId);
@@ -98,8 +98,8 @@ public class BookController {
     }
 
     // book 삭제
-    @DeleteMapping
-    public ResponseEntity<?> deleteBook(@RequestBody BookDTO dto, String userId) {
+    @DeleteMapping("/book")
+    public ResponseEntity<?> deleteBook(@RequestBody BookDTO dto, @AuthenticationPrincipal String userId) {
         try {
             BookEntity entity = BookDTO.toEntity(dto);
             entity.setUserId(userId);
